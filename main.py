@@ -65,6 +65,7 @@ if __name__ == '__main__':
     pygame.init()
     size = width, height = 550, 400
     screen = pygame.display.set_mode(size)
+    pygame.display.set_caption("Ритм-игра")
     clock = pygame.time.Clock()
     running = True
     fps = 120
