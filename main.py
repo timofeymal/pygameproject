@@ -51,7 +51,8 @@ class Note(pygame.sprite.Sprite):
         self.rect = self.rect.move(0, 1)
         if not screen.get_rect().contains(self.rect):
             self.kill()
-            # если стрелку не нажимают вовремя, то увеличивается счётчик ошибок
+            # если стрелку не нажимают вовремя, то увеличивается счётчик ошибок и играет звук непопадания
+            pygame.mixer.Sound(f"data/badsound{self.n}.wav").play()
             bad_presses += 1
         # добавление себя в список существующих нот
         current_notes.append((self.rect.y, self.n, self))
@@ -68,12 +69,12 @@ if __name__ == '__main__':
     running = True
     fps = 120
     # список нот / стрелок, которым нужно появиться (<> обозначает несколько стрелок, появляющиеся в одно время)
-    notes = "1234321<13><24>1234"
+    notes = "1234321<13><24>1234321"
     # создание события спавна стрелки
     NOTESPAWN = pygame.USEREVENT + 1
     note_count = 0
     pygame.time.set_timer(NOTESPAWN, 1000)
-
+    pygame.mixer.music.load("data/testsong.wav")
     all_notes_used = False
     while running:
         current_notes = []
@@ -106,6 +107,8 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             if event.type == NOTESPAWN:
+                if note_count == 0:
+                    pygame.mixer.music.play()
                 if note_count < len(notes):
                     # проверка на то, нужно ли создать одну стрелку или несколько
                     if notes[note_count] != "<" and notes[note_count] != ">":
@@ -129,47 +132,57 @@ if __name__ == '__main__':
                     all_notes_used = True
             if event.type == pygame.KEYDOWN:
                 # проверка на то, правильно ли нажата кнопка, если да,
-                # то стрелка уничтожается и, если до этого были ошибки, уменьшает счётчик на 1,
-                # а если нет, то добавляет 2.
+                # то стрелка уничтожается и, если до этого были ошибки, уменьшает счётчик на 1
+                # и играет звук правильного нажатия,
+                # а если нет, то добавляет к счётчику 2
+                # и играет звук неправильного нажатия.
                 if event.key == pygame.K_LEFT:
                     flag = False
                     for i in current_notes:
                         if i[1] == 1 and i[0] > 300:
+                            pygame.mixer.Sound("data/goodsound1.wav").play()
                             i[2].kill()
                             if bad_presses >= 1:
                                 bad_presses -= 1
                             flag = True
                     if flag is False:
+                        pygame.mixer.Sound("data/badsound1.wav").play()
                         bad_presses += 2
                 if event.key == pygame.K_DOWN:
                     flag = False
                     for i in current_notes:
                         if i[1] == 2 and i[0] > 300:
+                            pygame.mixer.Sound("data/goodsound2.wav").play()
                             i[2].kill()
                             if bad_presses >= 1:
                                 bad_presses -= 1
                             flag = True
                     if flag is False:
+                        pygame.mixer.Sound("data/badsound2.wav").play()
                         bad_presses += 2
                 if event.key == pygame.K_UP:
                     flag = False
                     for i in current_notes:
+                        pygame.mixer.Sound("data/goodsound3.wav").play()
                         if i[1] == 3 and i[0] > 300:
                             i[2].kill()
                             if bad_presses >= 1:
                                 bad_presses -= 1
                             flag = True
                     if flag is False:
+                        pygame.mixer.Sound("data/badsound3.wav").play()
                         bad_presses += 2
                 if event.key == pygame.K_RIGHT:
                     flag = False
                     for i in current_notes:
                         if i[1] == 4 and i[0] > 300:
+                            pygame.mixer.Sound("data/goodsound4.wav").play()
                             i[2].kill()
                             if bad_presses >= 1:
                                 bad_presses -= 1
                             flag = True
                     if flag is False:
+                        pygame.mixer.Sound("data/badsound4.wav").play()
                         bad_presses += 2
         if current_notes == [] and all_notes_used is True:
             # экран выигрыша и выход из игры
